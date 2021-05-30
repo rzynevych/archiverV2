@@ -75,5 +75,13 @@ int     Dictionary::writeChain(int elem, char *buff, int position)
 void    Dictionary::clear()
 {
     additions.clear();
+    for (int i = 0; i < 256; i++)
+    {
+        dict_elem elem;
+        elem.addition = i;
+        elem.position = i;
+        elem.parent = -1;
+        additions.push_back(elem);
+    }
     current = -1;
 }

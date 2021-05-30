@@ -1,24 +1,18 @@
 #include "Compressor.hpp"
 #include "CompressIO.hpp"
 
-Compressor::Compressor(CompressIO *io)
-{
-    this->io = io;
-    in_buff = new char[BUFF_SIZE];
-}
-
-Compressor::~Compressor()
-{
-    delete in_buff;
-}
-
 void    Compressor::run()
 {
-    while((length_in = io->read(in_buff)) > 0)
+    while((length_in = io.get_block(in_buff, thr_num)) > 0)
     {
+        out_buff.clear();
+        out_buff.insert(out_buff.begin(), 4, 0);
         compress();
+        int *p = (int *) out_buff.data();
+        *p = out_buff.size() - 4;
         cout << "w_start\n";
-        io->write(out_buff);
+        io.write_buff(out_buff, thr_num);
+        dictionary.clear();
         cout << "w_end\n";
     }
 }
@@ -35,9 +29,9 @@ void    Compressor::compress()
         int length = i2 - i1;
         // if (length > 10)
         //     printf("len: %d\n", length);
-        int add = dictionary.getLastAddition();
-        char *padd = (char *) &add;
-        out_buff.insert(out_buff.end(), padd, padd + 3);
+        int addr = dictionary.getLastAddition();
+        char *p = (char *) &addr;
+        out_buff.insert(out_buff.end(), p, p + 3);
         out_buff.insert(out_buff.end(), in_buff[i]);
         ++i;
     }

@@ -8,15 +8,23 @@
 class Compressor {
 
     private:
-    CompressIO      *io;
+    CompressIO      &io;
     Dictionary      dictionary;
     char            *in_buff;
     vector<char>    out_buff;
     int             length_in;
+    int             thr_num;
 
     public:
-    Compressor(CompressIO *io);
-    ~Compressor();
+    Compressor(CompressIO &ioref, int num) : io(ioref)
+    {
+        in_buff = new char[BUFF_SIZE];
+        thr_num = num;
+    }
+    ~Compressor()
+    {
+        delete in_buff;
+    }
     void            run();
     void            compress();
 };

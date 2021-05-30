@@ -14,6 +14,7 @@ void    Decompressor::run()
         assert(length_in % 4 == 0);
         decompress();
         io.write(outbuff, position);
+        dictionary.clear();
         position = 0;
     }
 }
@@ -25,5 +26,7 @@ void    Decompressor::decompress()
     {
         position += dictionary.writeChain(int_buff[i], outbuff, position);
         i++;
+        if (i == length_in / 4)
+            --position;
     }
 }

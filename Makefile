@@ -1,6 +1,7 @@
 NAME = arch.exe
 SRC =	src/pack/CompressIO.cpp \
 		src/pack/Compressor.cpp \
+		src/pack/ParallelCompressor.cpp \
 		src/Dictionary.cpp \
 		src/unpack/DecompressIO.cpp \
 		src/unpack/Decompressor.cpp \
@@ -9,11 +10,12 @@ SRC =	src/pack/CompressIO.cpp \
 CC = g++
 HEADER_DIR	=	includes/
 HEADER		=	includes/archiver.hpp \
+				includes/Dictionary.hpp \
 				includes/CompressIO.hpp \
 				includes/Compressor.hpp \
+				includes/ParallelCompressor.hpp \
 				includes/DecompressIO.hpp \
-				includes/Decompressor.hpp \
-				includes/Dictionary.hpp
+				includes/Decompressor.hpp
 
 CFLAGS = -g -I $(HEADER_DIR)
 

@@ -1,28 +1,104 @@
 #include "DecompressIO.hpp"
+#include <cassert>
 
-DecompressIO::DecompressIO(string filename)
-{
-    ifs.open(filename, ios::binary);
-    ofs.open("decompressed.jpg", ios::binary);
-    inbuff = new char[BUFF_SIZE * 2];
-    outbuff = new char[BUFF_SIZE];
-}
-
-DecompressIO::~DecompressIO()
-{
-    delete inbuff;
-    delete outbuff;
-    ifs.close();
-    ofs.close();
-}
+using namespace std;
 
 int DecompressIO::read(char *buff)
 {
-    ifs.read(buff, BUFF_SIZE);
-    return ifs.gcount();
+    int size;
+    ifs.read((char *) &size, FILE_LSIZE);
+    ifs.read(buff, size);
+    cout << "size: " << size << endl;
+    assert(ifs.gcount() == size);
+    return size;
 }
 
 void DecompressIO::write(char *buff, int length)
 {
-    ofs.write(buff, length);
+    outlength = length;
+    copy(buff, buff + outlength, outbuff);
+    bool open = false;
+    position = 0;
+    string fname("part");
+    fname.push_back('0' + part);
+    ofstream o1(fname, ios::binary);
+    o1.write(outbuff, outlength);
+    o1.flush();
+    o1.close();
+    part++;
+    while (position != outlength) {
+        check_to_read();
+        if (!open)
+        {
+            ofs.open(dirname + string(namebuff), ios::binary);
+            
+            if (!ofs.is_open())
+            {
+                std::cout << dirname + string(namebuff) << endl;
+                exit(0);
+            }
+            open = true;
+        }
+        if (to_read.file > outlength - position)
+        {
+            to_read.file -= outlength - position;
+            ofs.write(outbuff + position, outlength - position);
+            position = outlength;
+        }
+        else if (to_read.file > 0)
+        {
+            std::cout << position << endl;
+            ofs.write(outbuff + position, to_read.file);
+            ofs.flush();
+            std::cout << ofs.tellp() << endl;
+            ofs.close();
+            position += to_read.file;
+            to_read.namesize = NAME_SIZE;
+            to_read.file = 0;
+            open = false;
+        }
+    }
+}
+
+void    DecompressIO::check_to_read()
+{
+    std::cout << "namesize: " << to_read.namesize << endl;
+    std::cout << "name: " << to_read.name << endl;
+    std::cout << "position: " << position << endl;
+
+    if (to_read.namesize != 0 && read_params(to_read.namesize, to_read.namesize_pos, &to_read.name_tmp))
+    {
+        to_read.name = to_read.name_tmp;
+        std::cout << "name: " << to_read.name << endl;
+        std::cout << "position: " << position << endl;
+    }
+    if (to_read.name != 0 && read_params(to_read.name, to_read.name_pos, namebuff))
+    {
+        namebuff[to_read.name_tmp] = 0;
+        to_read.name_tmp = 0;
+        to_read.filesize = FILE_LSIZE;
+        std::cout << "position: " << position << endl;
+    }
+    if (to_read.filesize != 0 && read_params(to_read.filesize, to_read.filesize_pos, &to_read.file_tmp))
+    {
+        to_read.file = to_read.file_tmp;
+        to_read.file_tmp = 0;
+        std::cout << "file: " << to_read.file << endl;
+        std::cout << "position: " << position << endl;
+    }
+    std::cout << endl;
+}
+
+bool DecompressIO::read_params(int &length, int &pos, void *param)
+{
+    int end = position + length;
+    if (end > outlength)
+        end = outlength;
+    length -= end - position;
+    copy(outbuff + position, outbuff + end, (char *) param + pos);
+    pos += end - position;
+    position = end;
+    if (length == 0)
+        pos = 0;
+    return length == 0;
 }

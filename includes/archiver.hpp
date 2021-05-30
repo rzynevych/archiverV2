@@ -5,7 +5,9 @@
 # include   <iostream>
 # include   <cstdio>
 
-# define    BUFF_SIZE       0x100000
-# define    THREAD_COUNT    4
+# define    BUFF_SIZE       0x2000
+# define    NAME_SIZE       2
+# define    FILE_LSIZE      4
+# define    THREAD_COUNT    2
 
 #endif
