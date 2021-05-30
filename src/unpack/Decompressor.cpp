@@ -11,7 +11,7 @@ void    Decompressor::run()
 {
     while((length_in = io.read(inbuff)) > 0)
     {
-        assert(length_in % 4 == 0);
+        assert(length_in % 4 == 1);
         decompress();
         io.write(outbuff, position);
         dictionary.clear();
@@ -25,8 +25,8 @@ void    Decompressor::decompress()
     while (i < length_in / 4)
     {
         position += dictionary.writeChain(int_buff[i], outbuff, position);
-        i++;
-        if (i == length_in / 4)
-            --position;
+        i++;    
     }
+    if (inbuff[length_in - 1] == 0)
+        --position;
 }

@@ -17,18 +17,19 @@ void DecompressIO::write(char *buff, int length)
 {
     outlength = length;
     copy(buff, buff + outlength, outbuff);
-    bool open = false;
     position = 0;
     string fname("part");
-    fname.push_back('0' + part);
+    fname.insert(fname.length(), to_string(part).c_str());
     ofstream o1(fname, ios::binary);
     o1.write(outbuff, outlength);
     o1.flush();
     o1.close();
+    if (part == 6)
+        cout << "part = " << part << endl;
     part++;
     while (position != outlength) {
         check_to_read();
-        if (!open)
+        if (!to_read.file_open)
         {
             ofs.open(dirname + string(namebuff), ios::binary);
             
@@ -37,7 +38,7 @@ void DecompressIO::write(char *buff, int length)
                 std::cout << dirname + string(namebuff) << endl;
                 exit(0);
             }
-            open = true;
+            to_read.file_open = true;
         }
         if (to_read.file > outlength - position)
         {
@@ -47,7 +48,7 @@ void DecompressIO::write(char *buff, int length)
         }
         else if (to_read.file > 0)
         {
-            std::cout << position << endl;
+            std::cout << "part: " << part << " pos: " << position << endl;
             ofs.write(outbuff + position, to_read.file);
             ofs.flush();
             std::cout << ofs.tellp() << endl;
@@ -55,7 +56,7 @@ void DecompressIO::write(char *buff, int length)
             position += to_read.file;
             to_read.namesize = NAME_SIZE;
             to_read.file = 0;
-            open = false;
+            to_read.file_open = false;
         }
     }
 }

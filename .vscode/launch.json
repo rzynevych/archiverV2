@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}\\arch.exe",
-            "args": ["file.txt"],
+            "args": ["-d"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

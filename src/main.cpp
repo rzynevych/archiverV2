@@ -26,22 +26,35 @@ vector<string> get_all_files_names_within_folder(string folder)
     return names;
 }
 
-int main(int argc, char **argv)
+void pack()
 {
-    // vector<string> names = get_all_files_names_within_folder("./test_data");
-    // for (int i = 0; i < names.size(); ++i)
-    // {
-    //     names[i] = "test_data/" + names[i];
-    // }
-    // ParallelCompressor compressor(names, "name.av2");
+    vector<string> names = get_all_files_names_within_folder("./test_data");
+    for (int i = 0; i < names.size(); ++i)
+    {
+        names[i] = "test_data/" + names[i];
+    }
+    ParallelCompressor compressor(names, "name.av2");
 
-    // try {
-    //     compressor.run();
-    // } catch (exception &ex) {
-    //     cout << ex.what() << endl;
-    // }
+    try {
+        compressor.run();
+    } catch (exception &ex) {
+        cout << ex.what() << endl;
+    }
+}
+
+void unpack()
+{
     DecompressIO io("name.av2", "unpk/");
     Decompressor decompessor(io);
     decompessor.run();
+}
+
+int main(int argc, char **argv)
+{
+    
+    if (argc == 1)
+        pack();
+    else
+        unpack();
     return 0;
 }

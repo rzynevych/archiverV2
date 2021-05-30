@@ -15,6 +15,7 @@ struct to_read_t
     int     filesize_pos = 0;
     int     file = 0;
     int     file_tmp = 0;
+    bool    file_open = false;
 };
 
 

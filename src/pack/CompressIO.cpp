@@ -38,8 +38,10 @@ void    CompressIO::rw_loop()
         }
         if (writing)
         {
-            for (int i = 0; i < THREAD_COUNT; i++)
+            for (int i = 0; i < THREAD_COUNT; i++) {
                 ofs.write(outbuffers[i].data(), outbuffers[i].size());
+                outbuffers[i].clear();
+            }
             fill(write_flags, write_flags + THREAD_COUNT, false);
             writing = false;
             write_counter = 0;

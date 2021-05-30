@@ -20,10 +20,11 @@ void    Compressor::run()
 void    Compressor::compress()
 {
     int i = 0;
+    bool last;
     while (i < length_in)
     {
         int i1 = i;
-        while(i < length_in && dictionary.existsAddidion(in_buff[i]))
+        while(i < length_in && (last = dictionary.existsAddidion(in_buff[i])))
             ++i;
         int i2 = i;
         int length = i2 - i1;
@@ -35,4 +36,5 @@ void    Compressor::compress()
         out_buff.insert(out_buff.end(), in_buff[i]);
         ++i;
     }
+    out_buff.push_back((char) !last);
 }
