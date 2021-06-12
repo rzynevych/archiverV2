@@ -3,26 +3,28 @@
 #include "DecompressIO.hpp"
 #include "Decompressor.hpp"
 #include <iostream>
-#include <Windows.h>
+#include <dirent.h>
 
 using namespace std;
 
 vector<string> get_all_files_names_within_folder(string folder)
 {
     vector<string> names;
-    string search_path = folder + "/*.*";
-    WIN32_FIND_DATA fd; 
-    HANDLE hFind = ::FindFirstFile(search_path.c_str(), &fd); 
-    if(hFind != INVALID_HANDLE_VALUE) { 
-        do { 
-            // read all (real) files in current folder
-            // , delete '!' read other 2 default folder . and ..
-            if(! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
-                names.push_back(fd.cFileName);
-            }
-        }while(::FindNextFile(hFind, &fd)); 
-        ::FindClose(hFind); 
-    } 
+    string search_path = folder;
+	DIR *dir;
+	struct dirent *ent;
+	if ((dir = opendir (search_path.c_str())) != NULL) {
+ 	/* print all the files and directories within directory */
+ 	while ((ent = readdir (dir)) != NULL) {
+        if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, ".."))
+            continue;
+    	names.push_back(ent->d_name);
+  	}
+  	closedir (dir);
+	} else {
+	  	perror ("");
+	  	exit(0);
+	}
     return names;
 }
 

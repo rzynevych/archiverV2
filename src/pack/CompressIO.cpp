@@ -21,7 +21,8 @@ void CompressIO::read()
             ifs.close();
             ++file_iterator;
             open_new_file();
-        }
+        } else
+            break;
     }
 }
 

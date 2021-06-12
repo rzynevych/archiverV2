@@ -7,7 +7,7 @@ SRC =	src/pack/CompressIO.cpp \
 		src/unpack/Decompressor.cpp \
 		src/main.cpp
 
-CC = g++
+CC = clang++
 HEADER_DIR	=	includes/
 HEADER		=	includes/archiver.hpp \
 				includes/Dictionary.hpp \
@@ -17,7 +17,7 @@ HEADER		=	includes/archiver.hpp \
 				includes/DecompressIO.hpp \
 				includes/Decompressor.hpp
 
-CFLAGS = -g -I $(HEADER_DIR)
+CFLAGS = -g -std=c++11 -I $(HEADER_DIR)
 
 OBJ = $(patsubst %.cpp,%.o,$(SRC))
 

@@ -31,10 +31,14 @@ void    Compressor::compress()
         // if (length > 10)
         //     printf("len: %d\n", length);
         int addr = dictionary.getLastAddition();
-        char *p = (char *) &addr;
-        out_buff.insert(out_buff.end(), p, p + 3);
-        out_buff.insert(out_buff.end(), in_buff[i]);
+        write_addition((char *) &addr, in_buff[i]);
         ++i;
     }
     out_buff.push_back((char) !last);
+}
+
+void    Compressor::write_addition(char *addr, char addition)
+{
+    out_buff.insert(out_buff.end(), addr, addr + 3);
+    out_buff.insert(out_buff.end(), addition);
 }

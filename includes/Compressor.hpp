@@ -27,6 +27,7 @@ class Compressor {
     }
     void            run();
     void            compress();
+    void            write_addition(char *addr, char addition);
 };
 
 #endif

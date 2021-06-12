@@ -35,7 +35,7 @@ class CompressIO {
         fill(write_flags, write_flags + THREAD_COUNT, false);
         file_iterator = file_names.begin();
         ofs.open(archive_name, ios::binary);
-        thread(CompressIO::rw_loop, this).detach();
+        thread(&CompressIO::rw_loop, this).detach();
     }
     ~CompressIO()
     {
