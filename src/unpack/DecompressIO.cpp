@@ -1,5 +1,6 @@
 #include "DecompressIO.hpp"
 #include <cassert>
+#include <sys/stat.h>
 
 using namespace std;
 
@@ -31,8 +32,8 @@ void DecompressIO::write(char *buff, int length)
         check_to_read();
         if (!to_read.file_open)
         {
+            create_directory(namebuff);
             ofs.open(dirname + string(namebuff), ios::binary);
-            
             if (!ofs.is_open())
             {
                 std::cout << dirname + string(namebuff) << endl;
@@ -102,4 +103,20 @@ bool DecompressIO::read_params(int &length, int &pos, void *param)
     if (length == 0)
         pos = 0;
     return length == 0;
+}
+
+bool folder_exists(std::string path)
+{
+    struct stat st;
+    stat(path.c_str(), &st);
+    return st.st_mode & S_IFDIR;
+}
+
+void    create_directory(string fpath)
+{
+    string path = fpath.substr(0, path.rfind("/"));
+    if (!folder_exists(path))
+    {
+        mkdir(path.c_str(), 0755);
+    }
 }

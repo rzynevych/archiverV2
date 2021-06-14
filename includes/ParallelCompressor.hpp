@@ -3,6 +3,7 @@
 
 # include "CompressIO.hpp"
 # include "Compressor.hpp"
+# include "FileInfo.hpp"
 
 class ParallelCompressor
 {
@@ -12,7 +13,7 @@ private:
     thread          *threads[THREAD_COUNT];
 
 public:
-    ParallelCompressor(vector<string> &filenames, string archive_name) : io(filenames, archive_name)
+    ParallelCompressor(vector<FileInfo> &files, string root, string archive_name) : io(files, root, archive_name)
     {
         for (int i = 0; i < THREAD_COUNT; i++)
             compressors[i] = new Compressor(io, i);

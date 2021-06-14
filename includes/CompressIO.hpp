@@ -2,6 +2,7 @@
 # define COMPRESSIO_HPP
 
 # include "archiver.hpp"
+# include "FileInfo.hpp"
 # include <fstream>
 # include <thread>
 # include <chrono>
@@ -15,8 +16,8 @@ class CompressIO {
     ofstream                    ofs;
     char                        *buffer;
     vector<char>                outbuffers[THREAD_COUNT];
-    vector<string>              &file_names;
-    vector<string>::iterator    file_iterator;
+    vector<FileInfo>            &files;
+    vector<FileInfo>::iterator  file_iterator;
     volatile int                position = 0;
     volatile int                read_counter = 0;
     volatile int                write_counter = 0;
@@ -28,12 +29,12 @@ class CompressIO {
     volatile bool               rw_finish = false;
     
     public:
-    CompressIO(vector<string> &names, string archive_name) : file_names(names)
+    CompressIO(vector<string> &names, string root, string archive_name) : file_names(names)
     {
         buffer = new char[THREAD_COUNT * BUFF_SIZE];
         fill(read_flags, read_flags + THREAD_COUNT, true);
         fill(write_flags, write_flags + THREAD_COUNT, false);
-        file_iterator = file_names.begin();
+        file_iterator = files.begin();
         ofs.open(archive_name, ios::binary);
         thread(&CompressIO::rw_loop, this).detach();
     }
@@ -53,7 +54,6 @@ class CompressIO {
     void    open_new_file();
     void    write();
     void    rw_loop();
-
 };
 
 #endif

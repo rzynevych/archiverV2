@@ -55,7 +55,7 @@ void    CompressIO::open_new_file()
 {
     if (is_finish)
         return ;
-    if (file_iterator == file_names.end())
+    if (file_iterator == files.end())
     {
         is_finish = true;
         return ;
@@ -63,12 +63,15 @@ void    CompressIO::open_new_file()
     int name_length = file_iterator->length();
     *(short *)(buffer + position) = (short) name_length;
     position += NAME_SIZE;
-    copy(file_iterator->data(), file_iterator->data() + name_length, buffer + position);
+
+    const char *name_data = file_iterator->getPackName().data();
+    copy(name_data, name_data + name_length, buffer + position);
     position += file_iterator->length();
-    ifs.open(*file_iterator, ios::binary);
+    ifs.open(file_iterator->getFullName(), ios::binary);
     if (!ifs.is_open())
     {
-        cout << *file_iterator << endl;
+        perror("");
+        cout << file_iterator->getFullName() << endl;
         exit(0);
     }
     ifs.seekg(0, ios::end);
