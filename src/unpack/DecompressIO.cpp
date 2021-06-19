@@ -124,11 +124,4 @@ void    DecompressIO::create_directory(const char *fpath)
     {
         mkdir(path.c_str(), 0755);
     }
-    if (errno == EEXIST)
-    {
-        string s = path;
-        s.append(": ");
-        perror(s.c_str());
-        exit(-1);
-    }
 }
