@@ -20,7 +20,7 @@ void DecompressIO::write(char *buff, int length)
     copy(buff, buff + outlength, outbuff);
     position = 0;
     string fname("part");
-    fname.insert(fname.length(), to_string(part).c_str());
+    fname.insert(fname.length(), to_string(part));
     ofstream o1(fname, ios::binary);
     o1.write(outbuff, outlength);
     o1.flush();
@@ -33,10 +33,11 @@ void DecompressIO::write(char *buff, int length)
         if (!to_read.file_open)
         {
             create_directory(namebuff);
-            ofs.open(dirname + string(namebuff), ios::binary);
+            ofs.open(dirname + "/" + string(namebuff), ios::binary);
             if (!ofs.is_open())
             {
-                std::cout << dirname + string(namebuff) << endl;
+                perror("");
+                std::cout << dirname + "/" + string(namebuff) << endl;
                 exit(0);
             }
             to_read.file_open = true;
@@ -105,16 +106,18 @@ bool DecompressIO::read_params(int &length, int &pos, void *param)
     return length == 0;
 }
 
-bool folder_exists(std::string path)
+bool folder_exists(const string& path)
 {
-    struct stat st;
+    struct stat st{};
     stat(path.c_str(), &st);
     return st.st_mode & S_IFDIR;
 }
 
-void    create_directory(string fpath)
+void    DecompressIO::create_directory(char *fpath)
 {
-    string path = fpath.substr(0, path.rfind("/"));
+
+    string path(fpath);
+    path = path.substr(0, path.rfind("/"));
     if (!folder_exists(path))
     {
         mkdir(path.c_str(), 0755);

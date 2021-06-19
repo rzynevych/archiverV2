@@ -16,7 +16,7 @@ class CompressIO {
     ofstream                    ofs;
     char                        *buffer;
     vector<char>                outbuffers[THREAD_COUNT];
-    vector<FileInfo>            &files;
+    vector<FileInfo>            files;
     vector<FileInfo>::iterator  file_iterator;
     volatile int                position = 0;
     volatile int                read_counter = 0;
@@ -29,8 +29,9 @@ class CompressIO {
     volatile bool               rw_finish = false;
     
     public:
-    CompressIO(vector<string> &names, string root, string archive_name) : file_names(names)
+    CompressIO(vector<FileInfo> &_files, const string& archive_name)
     {
+        files = _files;
         buffer = new char[THREAD_COUNT * BUFF_SIZE];
         fill(read_flags, read_flags + THREAD_COUNT, true);
         fill(write_flags, write_flags + THREAD_COUNT, false);

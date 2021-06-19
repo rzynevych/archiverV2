@@ -9,11 +9,11 @@ class ParallelCompressor
 {
 private:
     CompressIO      io;
-    Compressor      *compressors[THREAD_COUNT];
-    thread          *threads[THREAD_COUNT];
+    Compressor      *compressors[THREAD_COUNT]{};
+    thread          *threads[THREAD_COUNT]{};
 
 public:
-    ParallelCompressor(vector<FileInfo> &files, string root, string archive_name) : io(files, root, archive_name)
+    ParallelCompressor(vector<FileInfo> &files, const string& archive_name) : io(files, archive_name)
     {
         for (int i = 0; i < THREAD_COUNT; i++)
             compressors[i] = new Compressor(io, i);

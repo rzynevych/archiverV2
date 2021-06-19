@@ -8,23 +8,19 @@ class FileInfo
 private:
     std::string     root_path;
     std::string     path;
-    std::string     name;
-    std::string     packName;
+    std::string     full_name;
 public:
-    FileInfo(std::string rp, std::string p, std::string n)
+    FileInfo(const std::string& rp, const std::string& p)
     {
         root_path = rp;
         path = p;
-        name = n;
-        packName = path + "/" + name;
+        full_name = root_path + "/" + path;
     }
     std::string getRootPath() {return root_path;}
     std::string getPath() {return path;}
-    std::string getName() {return name;}
-    std::string &getPackName() {return packName;}
-    std::string getFullName() {return root_path + "/" + packName;}
-    int         length() {return packName.length();}
+    std::string getFullName() {return root_path + "/" + path;}
+    size_t        length() {return path.length();}
+    size_t        getFullLength() {return full_name.length();}
 };
-
 
 #endif

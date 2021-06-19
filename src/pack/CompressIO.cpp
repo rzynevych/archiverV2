@@ -64,7 +64,8 @@ void    CompressIO::open_new_file()
     *(short *)(buffer + position) = (short) name_length;
     position += NAME_SIZE;
 
-    const char *name_data = file_iterator->getPackName().data();
+    string path = file_iterator->getPath();
+    const char *name_data = path.data();
     copy(name_data, name_data + name_length, buffer + position);
     position += file_iterator->length();
     ifs.open(file_iterator->getFullName(), ios::binary);

@@ -28,14 +28,13 @@ private:
     std::string     dirname;
     int             position = 0;
     int             part = 0;
-    int             outlength;
-    bool            ready;
+    int             outlength{};
     char            *inbuff;
     char            *outbuff;
     char            *namebuff;
 
 public:
-    DecompressIO(std::string filename, std::string dname)
+    DecompressIO(const std::string& filename, std::string& dname)
     {
         dirname = dname;
         ifs.open(filename, std::ios::binary);
@@ -54,6 +53,7 @@ public:
     private:
     void    check_to_read();
     bool    read_params(int &length, int &pos, void *param);
+    static void    create_directory(char *fpath);
 };
 
 #endif
