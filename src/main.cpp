@@ -76,7 +76,8 @@ void pack(const string& path)
 
 void unpack()
 {
-    DecompressIO io("name.av2", (string &) "unpk/");
+    string folder("unpk");
+    DecompressIO io("name.av2", folder);
     Decompressor decompressor(io);
     decompressor.run();
 }

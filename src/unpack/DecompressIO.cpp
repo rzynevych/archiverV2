@@ -32,11 +32,13 @@ void DecompressIO::write(char *buff, int length)
         check_to_read();
         if (!to_read.file_open)
         {
-            create_directory(namebuff);
-            ofs.open(dirname + "/" + string(namebuff), ios::binary);
+            string path = dirname;
+            path.append("/").append(namebuff);
+            create_directory(path.c_str());
+            ofs.open(path, ios::binary);
             if (!ofs.is_open())
             {
-                perror("");
+                perror("Error while opening output stream: ");
                 std::cout << dirname + "/" + string(namebuff) << endl;
                 exit(0);
             }
@@ -92,7 +94,7 @@ void    DecompressIO::check_to_read()
     std::cout << endl;
 }
 
-bool DecompressIO::read_params(int &length, int &pos, void *param)
+bool    DecompressIO::read_params(int &length, int &pos, void *param)
 {
     int end = position + length;
     if (end > outlength)
@@ -106,14 +108,14 @@ bool DecompressIO::read_params(int &length, int &pos, void *param)
     return length == 0;
 }
 
-bool folder_exists(const string& path)
+bool    folder_exists(const string& path)
 {
     struct stat st{};
     stat(path.c_str(), &st);
     return st.st_mode & S_IFDIR;
 }
 
-void    DecompressIO::create_directory(char *fpath)
+void    DecompressIO::create_directory(const char *fpath)
 {
 
     string path(fpath);
@@ -121,5 +123,12 @@ void    DecompressIO::create_directory(char *fpath)
     if (!folder_exists(path))
     {
         mkdir(path.c_str(), 0755);
+    }
+    if (errno == EEXIST)
+    {
+        string s = path;
+        s.append(": ");
+        perror(s.c_str());
+        exit(-1);
     }
 }

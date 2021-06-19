@@ -36,7 +36,9 @@ private:
 public:
     DecompressIO(const std::string& filename, std::string& dname)
     {
+        int i = 0;
         dirname = dname;
+        create_directory(dirname.c_str());
         ifs.open(filename, std::ios::binary);
         inbuff = new char[BUFF_SIZE * 2];
         outbuff = new char[BUFF_SIZE];
@@ -48,12 +50,12 @@ public:
         delete[] outbuff;
         ifs.close();
     }
-    int         read(char *buff);
-    void        write(char *buff, int length);
+    int             read(char *buff);
+    void            write(char *buff, int length);
     private:
-    void    check_to_read();
-    bool    read_params(int &length, int &pos, void *param);
-    static void    create_directory(char *fpath);
+    void            check_to_read();
+    bool            read_params(int &length, int &pos, void *param);
+    static void     create_directory(const char *fpath);
 };
 
 #endif
