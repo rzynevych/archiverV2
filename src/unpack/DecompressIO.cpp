@@ -96,6 +96,9 @@ void    DecompressIO::check_to_read()
 
 bool    DecompressIO::read_params(int &length, int &pos, void *param)
 {
+    int a = 5;
+    size_t &&la = dirname.length();
+    la = 6;
     int end = position + length;
     if (end > outlength)
         end = outlength;
@@ -119,7 +122,7 @@ void    DecompressIO::create_directory(const char *fpath)
 {
 
     string path(fpath);
-    path = path.substr(0, path.rfind("/"));
+    path = path.substr(0, path.rfind('/'));
     if (!folder_exists(path))
     {
         mkdir(path.c_str(), 0755);
