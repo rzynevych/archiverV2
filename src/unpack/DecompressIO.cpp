@@ -39,7 +39,7 @@ void DecompressIO::write(char *buff, int length)
             if (!ofs.is_open())
             {
                 perror("Error while opening output stream: ");
-                std::cout << dirname + "/" + string(namebuff) << endl;
+                std::cout << path << endl;
                 exit(0);
             }
             to_read.file_open = true;
