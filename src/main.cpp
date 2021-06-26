@@ -35,16 +35,16 @@ void    get_all_filenames_within_folder(vector<FileInfo> &files, const string& r
             string name(ent->d_name);
             if (name == "." || name == "..")
                 continue;
-            int flag = isFile( path + "/" + name);
+            int flag = isFile( path + "/" += name);
             if (flag == 1)
             {
-                files.emplace_back(root_path, path + "/" + name);
+                files.emplace_back(root_path, path + "/" += name);
             }
             else if (flag == 0)
-                get_all_filenames_within_folder(files, root_path, path + "/" + name);
+                get_all_filenames_within_folder(files, root_path, path + "/" += name);
             else
             {
-                string s("An error occured while reading directory ");
+                string s("An error occurred while reading directory ");
                 s.append(full_path);
                 perror (s.c_str());
                 exit(0);
@@ -59,13 +59,13 @@ void    get_all_filenames_within_folder(vector<FileInfo> &files, const string& r
 	}
 }
 
-void pack(const string& path)
+void pack(const string& path, string &archive_name)
 {
     string root = path.substr(0, path.rfind('/'));
     string name = path.substr(path.rfind('/') + 1, -1);
     vector<FileInfo> files;
     get_all_filenames_within_folder(files, root, name);
-    ParallelCompressor compressor(files, "name.av2");
+    ParallelCompressor compressor(files, archive_name);
 
     try {
         compressor.run();
@@ -74,20 +74,63 @@ void pack(const string& path)
     }
 }
 
-void unpack()
+void unpack(string &file, string &folder)
 {
-    string folder("unpk");
-    DecompressIO io("name.av2", folder);
+    DecompressIO io(file, folder);
     Decompressor decompressor(io);
     decompressor.run();
 }
 
+void unpack_argv_processing(int argc, string args[])
+{
+    if (argc > 3)
+    {
+        cout << "To many arguments for unpacking" << endl;
+        exit(0);
+    }
+    string dir;
+    if (argc == 2)
+        dir = ".";
+    if (argc == 3)
+    {
+        dir = args[2];
+        int isfile = isFile(dir);
+        if (isfile == 1 || isfile == 0)
+        {
+            cout << "The file " << dir << "already exists" << endl;
+            exit(0);
+        }
+    }
+    unpack(args[1], dir);
+}
+
+void pack_argv_process()
+{
+
+}
+
+void argv_process(int argc, char **argv) {
+    string args[argc];
+
+    if (argc == 1)
+    {
+        cout << USAGE << endl;
+    }
+    for (int i = 0; i < argc; ++i)
+    {
+        args[i] = argv[i];
+    }
+    if (args[1].find(".av2") == args[1].length() - 4)
+    {
+        unpack_argv_processing(argc, args);
+    } else {
+        unpack_argv_processing(argc, args);
+    }
+}
+
+
 int main(int argc, char **argv)
 {
-    
-    if (argc == 1)
-        pack("./test_data");
-    else
-        unpack();
+    argv_process(argc, argv);
     return 0;
 }

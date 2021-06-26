@@ -9,5 +9,6 @@
 # define    NAME_SIZE       2
 # define    FILE_LSIZE      4
 # define    THREAD_COUNT    3
+# define    USAGE           "todo usage"
 
 #endif

@@ -96,9 +96,6 @@ void    DecompressIO::check_to_read()
 
 bool    DecompressIO::read_params(int &length, int &pos, void *param)
 {
-    int a = 5;
-    size_t &&la = dirname.length();
-    la = 6;
     int end = position + length;
     if (end > outlength)
         end = outlength;
