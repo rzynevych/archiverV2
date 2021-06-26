@@ -36,10 +36,14 @@ private:
 public:
     DecompressIO(const std::string& filename, std::string& dname)
     {
-        int i = 0;
         dirname = dname;
         create_directory(dirname.c_str());
         ifs.open(filename, std::ios::binary);
+        if (!ifs.is_open())
+        {
+            std::cout << "Cannot open file " << filename << ": " << strerror(errno) << std::endl;
+            exit(0);
+        }
         inbuff = new char[BUFF_SIZE * 2];
         outbuff = new char[BUFF_SIZE];
         namebuff = new char[0x1000];

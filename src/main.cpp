@@ -14,12 +14,12 @@ int isFile(const string& path)
 
     if(directory != nullptr)
     {
-     closedir(directory);
-     return 0;
+        closedir(directory);
+        return 0;
     }
     if(errno == ENOTDIR)
     {
-     return 1;
+        return 1;
     }
     return -1;
 }
@@ -59,14 +59,35 @@ void    get_all_filenames_within_folder(vector<FileInfo> &files, const string& r
 	}
 }
 
-void pack(const string& path, string &archive_name)
+void pack(const vector<string>& paths)
 {
-    string root = path.substr(0, path.rfind('/'));
-    string name = path.substr(path.rfind('/') + 1, -1);
+    string root;
+    string name;
     vector<FileInfo> files;
-    get_all_filenames_within_folder(files, root, name);
-    ParallelCompressor compressor(files, archive_name);
 
+    for (int i = 1; i < paths.size() - 1; ++i)
+    {
+        const string& path = paths[i];
+        if (path.find('/') == -1)
+        {
+            root = ".";
+            name = path;
+        } else {
+            root = path.substr(0, path.rfind('/'));
+            name = path.substr(path.rfind('/') + 1, -1);
+        }
+        if (isFile(path) == 1)
+            files.emplace_back(root, name);
+        else
+            get_all_filenames_within_folder(files, root, name);
+    }
+    string archive_name = paths.at(paths.size() - 1);
+    if (archive_name.find(".av2") != archive_name.length() - 4)
+    {
+        cout << "Invalid archive name: " << archive_name  << endl;
+        exit(0);
+    }
+    ParallelCompressor compressor(files, archive_name);
     try {
         compressor.run();
     } catch (exception &ex) {
@@ -81,21 +102,20 @@ void unpack(string &file, string &folder)
     decompressor.run();
 }
 
-void unpack_argv_processing(int argc, string args[])
+void unpack_argv_process(vector<string> &args)
 {
-    if (argc > 3)
+    if (args.size() > 3)
     {
         cout << "To many arguments for unpacking" << endl;
         exit(0);
     }
     string dir;
-    if (argc == 2)
+    if (args.size() == 2)
         dir = ".";
-    if (argc == 3)
+    if (args.size() == 3)
     {
         dir = args[2];
-        int isfile = isFile(dir);
-        if (isfile == 1 || isfile == 0)
+        if (isFile(dir) != -1)
         {
             cout << "The file " << dir << "already exists" << endl;
             exit(0);
@@ -104,30 +124,27 @@ void unpack_argv_processing(int argc, string args[])
     unpack(args[1], dir);
 }
 
-void pack_argv_process()
+void argv_process(int argc, char **argv)
 {
-
-}
-
-void argv_process(int argc, char **argv) {
-    string args[argc];
+    vector<string> args;
 
     if (argc == 1)
     {
         cout << USAGE << endl;
+        exit(0);
     }
+    args.reserve(argc);
     for (int i = 0; i < argc; ++i)
     {
-        args[i] = argv[i];
+        args.emplace_back(argv[i]);
     }
     if (args[1].find(".av2") == args[1].length() - 4)
     {
-        unpack_argv_processing(argc, args);
+        unpack_argv_process(args);
     } else {
-        unpack_argv_processing(argc, args);
+        pack(args);
     }
 }
-
 
 int main(int argc, char **argv)
 {

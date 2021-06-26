@@ -20,7 +20,7 @@ private:
 public:    
     Dictionary();
     void    insertAddition(char addition); 
-    bool    existsAddidion(char addidion);
+    bool    existsAddition(char addition);
     int     getLastAddition();
     int     writeChain(int elem, char *buff, int position);
     void    clear();

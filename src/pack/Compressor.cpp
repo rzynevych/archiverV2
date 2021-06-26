@@ -24,7 +24,7 @@ void    Compressor::compress()
     while (i < length_in)
     {
         int i1 = i;
-        while(i < length_in && (last = dictionary.existsAddidion(in_buff[i])))
+        while(i < length_in && (last = dictionary.existsAddition(in_buff[i])))
             ++i;
         int i2 = i;
         int length = i2 - i1;
