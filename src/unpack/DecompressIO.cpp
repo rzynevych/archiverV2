@@ -19,12 +19,12 @@ void DecompressIO::write(char *buff, int length)
     outlength = length;
     copy(buff, buff + outlength, outbuff);
     position = 0;
-    string fname("part");
-    fname.insert(fname.length(), to_string(part));
-    ofstream o1(fname, ios::binary);
-    o1.write(outbuff, outlength);
-    o1.flush();
-    o1.close();
+//    string fname("part");
+//    fname.insert(fname.length(), to_string(part));
+//    ofstream o1(fname, ios::binary);
+//    o1.write(outbuff, outlength);
+//    o1.flush();
+//    o1.close();
     if (part == 6)
         cout << "part = " << part << endl;
     part++;
