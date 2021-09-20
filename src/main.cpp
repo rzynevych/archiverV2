@@ -138,7 +138,8 @@ void argv_process(int argc, char **argv)
     {
         args.emplace_back(argv[i]);
     }
-    if (args[1].find(".av2") == args[1].length() - 4)
+    int pos = args[1].find(".av2");
+    if (pos > 0 && pos == args[1].length() - 4)
     {
         unpack_argv_process(args);
     } else {
