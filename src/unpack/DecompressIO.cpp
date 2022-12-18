@@ -119,9 +119,17 @@ void    DecompressIO::create_directory(const char *fpath)
 {
 
     string path(fpath);
-    path = path.substr(0, path.rfind('/'));
-    if (!folder_exists(path))
+    string curr_path("");
+    
+    int start = 0;
+    size_t pos;
+    while ((pos = path.find('/', start)) != std::string::npos)
     {
-        mkdir(path.c_str(), 0755);
-    }
+        curr_path.append("/").append(path.substr(start, pos));
+        if (!folder_exists(curr_path))
+        {
+            mkdir(curr_path.c_str(), 0755);
+        }
+        ++start;
+    }    
 }

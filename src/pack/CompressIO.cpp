@@ -4,8 +4,6 @@
 void CompressIO::read()
 {
     position = 0;
-    if (!ifs.is_open())
-        open_new_file();
     while (position < THREAD_COUNT * BUFF_SIZE && !is_finish)
     {
         int count;
@@ -15,12 +13,11 @@ void CompressIO::read()
             position += count;
         } while(count > 0);
         int length = file_iterator->length();
-        if (position < THREAD_COUNT * BUFF_SIZE && count == 0
-            && position + length + NAME_SIZE < THREAD_COUNT * BUFF_SIZE)
+        if (count == 0 && position + length + NAME_SIZE < THREAD_COUNT * BUFF_SIZE)
         {
             ifs.close();
-            ++file_iterator;
             open_new_file();
+            ++file_iterator;
         } else
             break;
     }

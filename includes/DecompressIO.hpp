@@ -3,6 +3,7 @@
 
 # include "archiver.hpp"
 # include <fstream>
+# include <cstring>
 
 struct to_read_t
 {

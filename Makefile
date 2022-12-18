@@ -27,7 +27,7 @@ OBJ = $(patsubst %.cpp,%.o,$(SRC))
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) -o $(NAME) $(OBJ)
+	$(CC) -pthread -o $(NAME) $(OBJ)
 
 clean:
 	rm -f $(OBJ)

@@ -35,10 +35,10 @@ void    get_all_filenames_within_folder(vector<FileInfo> &files, const string& r
             string name(ent->d_name);
             if (name == "." || name == "..")
                 continue;
-            int flag = isFile( path + "/" += name);
+            int flag = isFile( full_path + "/" + name);
             if (flag == 1)
             {
-                files.emplace_back(root_path, path + "/" += name);
+                files.emplace_back(root_path, path + "/" + name);
             }
             else if (flag == 0)
                 get_all_filenames_within_folder(files, root_path, path + "/" += name);
@@ -117,7 +117,7 @@ void unpack_argv_process(vector<string> &args)
         dir = args[2];
         if (isFile(dir) != -1)
         {
-            cout << "The file " << dir << "already exists" << endl;
+            cout << "The file " << dir << " already exists" << endl;
             exit(0);
         }
     }
