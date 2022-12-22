@@ -71,23 +71,23 @@ void    DecompressIO::check_to_read()
     std::cout << "name: " << to_read.name << endl;
     std::cout << "position: " << position << endl;
 
-    if (to_read.namesize != 0 && read_params(to_read.namesize, to_read.namesize_pos, &to_read.name_tmp))
+    if (to_read.namesize != 0 && read_params(to_read.namesize, to_read.namesize_pos, &to_read.namesize_val))
     {
-        to_read.name = to_read.name_tmp;
+        to_read.name = to_read.namesize_val;
         std::cout << "name: " << to_read.name << endl;
         std::cout << "position: " << position << endl;
     }
     if (to_read.name != 0 && read_params(to_read.name, to_read.name_pos, namebuff))
     {
-        namebuff[to_read.name_tmp] = 0;
-        to_read.name_tmp = 0;
+        namebuff[to_read.namesize_val] = 0;
+        to_read.namesize_val = 0;
         to_read.filesize = FILE_LSIZE;
         std::cout << "position: " << position << endl;
     }
-    if (to_read.filesize != 0 && read_params(to_read.filesize, to_read.filesize_pos, &to_read.file_tmp))
+    if (to_read.filesize != 0 && read_params(to_read.filesize, to_read.filesize_pos, &to_read.filesize_val))
     {
-        to_read.file = to_read.file_tmp;
-        to_read.file_tmp = 0;
+        to_read.file = to_read.filesize_val;
+        to_read.filesize_val = 0;
         std::cout << "file: " << to_read.file << endl;
         std::cout << "position: " << position << endl;
     }
@@ -125,11 +125,14 @@ void    DecompressIO::create_directory(const char *fpath)
     size_t pos;
     while ((pos = path.find('/', start)) != std::string::npos)
     {
-        curr_path.append("/").append(path.substr(start, pos));
+        if (start != 0)
+            curr_path.append("/");
+        curr_path.append(path.substr(start, pos - start));
         if (!folder_exists(curr_path))
         {
             mkdir(curr_path.c_str(), 0755);
+            perror(curr_path.c_str());
         }
-        ++start;
+        start = pos + 1;
     }    
 }

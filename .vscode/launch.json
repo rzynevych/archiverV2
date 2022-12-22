@@ -5,16 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch (lldb)",
+            "name": "C++ Launch",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/arch.exe",
-            "args": [],
+            "launchCompleteCommand": "exec-run",
+            "args": ["src", "xxx.av2"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],
-            "MIMode": "lldb",
-            "externalConsole": false
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
         }
     ]
 }

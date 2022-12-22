@@ -4,6 +4,11 @@
 void CompressIO::read()
 {
     position = 0;
+    if (!ifs.is_open())
+    {
+        open_new_file();
+        ++file_iterator;
+    }
     while (position < THREAD_COUNT * BUFF_SIZE && !is_finish)
     {
         int count;
@@ -12,6 +17,11 @@ void CompressIO::read()
             count = ifs.gcount();
             position += count;
         } while(count > 0);
+        if (file_iterator == files.end())
+        {
+            is_finish = true;
+            return ;
+        }
         int length = file_iterator->length();
         if (count == 0 && position + length + NAME_SIZE < THREAD_COUNT * BUFF_SIZE)
         {
@@ -30,19 +40,26 @@ void    CompressIO::rw_loop()
         if (reading)
         {
             read();
-            fill(read_flags, read_flags + THREAD_COUNT, false);
-            reading = false;
-            read_counter = 0;
+            for (int i = 0; i < THREAD_COUNT; ++i)
+            {
+                read_flags[i].store(false);
+            }
+            reading.store(false);
+            read_counter.store(0);
         }
         if (writing)
         {
-            for (int i = 0; i < THREAD_COUNT; i++) {
+            cout << "write_counter = " << write_counter << endl;
+            for (int i = 0; i < write_counter; i++) {
                 ofs.write(outbuffers[i].data(), outbuffers[i].size());
                 outbuffers[i].clear();
             }
-            fill(write_flags, write_flags + THREAD_COUNT, false);
-            writing = false;
-            write_counter = 0;
+            for (int i = 0; i < THREAD_COUNT; ++i)
+            {
+                write_flags[i].store(false);
+            }
+            writing.store(false);
+            write_counter.store(0);
         }
         this_thread::sleep_for(chrono::microseconds(100));
     }
@@ -52,11 +69,6 @@ void    CompressIO::open_new_file()
 {
     if (is_finish)
         return ;
-    if (file_iterator == files.end())
-    {
-        is_finish = true;
-        return ;
-    }
     int name_length = file_iterator->length();
     *(short *)(buffer + position) = (short) name_length;
     position += NAME_SIZE;
@@ -93,10 +105,10 @@ int     CompressIO::get_block(char *buff, int thr)
     int count = position - BUFF_SIZE * thr > BUFF_SIZE ? BUFF_SIZE : position - BUFF_SIZE * thr;
     char *end = buffer + BUFF_SIZE * thr + count;
     copy(buffer + BUFF_SIZE * thr, end, buff);
-    read_flags[thr] = true;
+    read_flags[thr].store(true);
     ++read_counter;
     if (read_counter == THREAD_COUNT)
-        reading = true;
+        reading.store(true);
     return count;
 }
 
@@ -107,8 +119,8 @@ void    CompressIO::write_buff(const vector<char> &buff, int thr)
         this_thread::sleep_for(chrono::microseconds(100));
     }
     outbuffers[thr].insert(outbuffers[thr].begin(), buff.begin(), buff.end());
-    write_flags[thr] = true;
+    write_flags[thr].store(true);
     ++write_counter;
     if (write_counter == THREAD_COUNT)
-        writing = true;
+        writing.store(true);
 }

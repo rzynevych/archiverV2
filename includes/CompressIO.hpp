@@ -4,8 +4,10 @@
 # include "archiver.hpp"
 # include "FileInfo.hpp"
 # include <fstream>
+# include <memory>
 # include <thread>
 # include <chrono>
+# include <atomic>
 
 using namespace std;
 
@@ -18,39 +20,45 @@ class CompressIO {
     vector<char>                outbuffers[THREAD_COUNT];
     vector<FileInfo>            files;
     vector<FileInfo>::iterator  file_iterator;
-    volatile int                position = 0;
-    volatile int                read_counter = 0;
-    volatile int                write_counter = 0;
-    volatile bool               read_flags[THREAD_COUNT];
-    volatile bool               write_flags[THREAD_COUNT];  
-    volatile bool               reading = true;
-    volatile bool               writing = false;
-    volatile bool               is_finish = false;
-    volatile bool               rw_finish = false;
+    unique_ptr<thread>          rw_thread;
+    atomic_int                  position;
+    atomic_int                  read_counter;
+    atomic_int                  write_counter;
+    atomic_bool                 read_flags[THREAD_COUNT];
+    atomic_bool                 write_flags[THREAD_COUNT];  
+    atomic_bool                 reading;
+    atomic_bool                 writing;
+    atomic_bool                 is_finish;
+    atomic_bool                 rw_finish;
     
     public:
-    CompressIO(vector<FileInfo> &_files, const string& archive_name)
+    CompressIO(vector<FileInfo> &_files, const string& archive_name) :
+        position(0), read_counter(0), write_counter(0), 
+        reading(true), writing(false), is_finish(false), rw_finish(false)
     {
         files = _files;
         buffer = new char[THREAD_COUNT * BUFF_SIZE];
         fill(read_flags, read_flags + THREAD_COUNT, true);
         fill(write_flags, write_flags + THREAD_COUNT, false);
         file_iterator = files.begin();
-        open_new_file();
-        ++file_iterator;
         ofs.open(archive_name, ios::binary);
-        thread(&CompressIO::rw_loop, this).detach();
+        rw_thread.reset(new thread(&CompressIO::rw_loop, this));
     }
     ~CompressIO()
     {
-        for (int i = 0; i < THREAD_COUNT && write_flags[i]; i++)
-            ofs.write(outbuffers[i].data(), outbuffers[i].size());
+
+        writing.store(true);
+        this_thread::sleep_for(chrono::milliseconds(10));
+        rw_finish.store(true);
+        rw_thread->join();
+        cout << "wf[0] = " << write_flags[0] << endl;
         ofs.close();
-        rw_finish = true;
         delete buffer;
     }
+
     int     get_block(char *buff, int thr);
     void    write_buff(const vector<char> &buff, int thr);
+    
     private:
     void    read();
     void    read_file();

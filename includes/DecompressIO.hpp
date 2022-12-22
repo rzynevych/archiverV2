@@ -9,13 +9,14 @@ struct to_read_t
 {
     int     namesize = NAME_SIZE;
     int     namesize_pos = 0;
+    int     namesize_val = 0;
+
     int     name = 0;
     int     name_pos = 0;
-    int     name_tmp = 0;
     int     filesize = 0;
     int     filesize_pos = 0;
+    int     filesize_val = 0;
     int     file = 0;
-    int     file_tmp = 0;
     bool    file_open = false;
 };
 
@@ -38,7 +39,6 @@ public:
     DecompressIO(const std::string& filename, std::string& dname)
     {
         dirname = dname;
-        create_directory(dirname.c_str());
         ifs.open(filename, std::ios::binary);
         if (!ifs.is_open())
         {
@@ -53,6 +53,7 @@ public:
     {
         delete[] inbuff;
         delete[] outbuff;
+        delete[] namebuff;
         ifs.close();
     }
     int             read(char *buff);
@@ -60,7 +61,7 @@ public:
     private:
     void            check_to_read();
     bool            read_params(int &length, int &pos, void *param);
-    static void     create_directory(const char *fpath);
+    void            create_directory(const char *fpath);
 };
 
 #endif
