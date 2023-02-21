@@ -130,7 +130,11 @@ void    DecompressIO::create_directory(const char *fpath)
         curr_path.append(path.substr(start, pos - start));
         if (!folder_exists(curr_path))
         {
+            #ifdef _WIN32
+            mkdir(curr_path.c_str());
+            #else
             mkdir(curr_path.c_str(), 0755);
+            #endif
             perror(curr_path.c_str());
         }
         start = pos + 1;

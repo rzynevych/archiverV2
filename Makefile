@@ -7,7 +7,7 @@ SRC =	src/pack/CompressIO.cpp \
 		src/unpack/Decompressor.cpp \
 		src/main.cpp
 
-CC = clang++
+CC = g++
 HEADER_DIR	=	includes/
 HEADER		=	includes/archiver.hpp \
 				includes/Dictionary.hpp \
